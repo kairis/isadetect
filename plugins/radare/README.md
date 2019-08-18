@@ -37,3 +37,10 @@ instructions.
 If you now exit the visual mode with "q", and type "isadetect", it will send the
 file to the API for identification, and print the results in the console. If you
 go back to the visual mode, you should see no invalid instructions anymore.
+
+How does it work?
+-----
+
+The plugin sends the file to the API, which returns the predicted architecture, endianness and wordsize for the file.
+
+These values are used to set the corresponding values of radare2, so it will analyze the file correctly.
