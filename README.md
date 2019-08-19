@@ -2,6 +2,7 @@
 
 isadetect - "ML-based ISA detection (architecture and endianness of binary code/sequences)"
 
+tl;dr: Input: binary file. Output: prediction for architecture and endianness.
 
 ## Referencing
 
