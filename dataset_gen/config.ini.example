@@ -1,0 +1,51 @@
+[dataset_gen]
+
+; i.e. place where results should be extracted
+output_path = ${DATASET_GEN_ROOT_FOLDER}/output
+
+# The amount of threads allocated
+thread_count = 4
+
+[crawler]
+# Possible architectures for >= 9.0.0: amd64, arm64, armel, armhf, i386, mips, mips64el, mipsel, ppc64el, s390x
+# ppc can be found from <= 8.0.0, s390, ia64 and sparc from <= 7.0.0, hppa in <= 5.0.0
+# One version of one architecture requires about 40 GB of free space
+architectures = mips64el
+
+# Debian ports are found for the following architectures:
+# alpha, hppa, hurd-i386, ia64, m68k, ppc, ppc64, riscv64, sh4, sparc64 and x32
+# One architecture requires about 100 GB of free space
+port_architectures = alpha
+
+debian_versions = 9.0.0
+
+# This list is used to download categories of debian packages that could be seen in IoT devices.
+# It was done because there was a need for metadata like that.
+# List taken from https://packages.debian.org/stable/
+package_list = Web Servers,Shells,Utilities,Embedded software,Kernels,Libraries,Administration Utilities
+
+iot_packages_location = ${dataset_gen:output_path}/iot_packages.json
+iso_metadata = ${dataset_gen:output_path}/iso_metadata.json
+
+[debian_port_downloader]
+
+output_path = ${dataset_gen:output_path}/debian_ports.json
+
+[jigdo_downloader]
+
+iso_ignore_list = update,xfce,kde,lxde,businesscard
+downloaded_architectures = mips64el
+output_path = ${dataset_gen:output_path}/debian_isos.json
+
+[deb_extractor]
+
+output_path = ${dataset_gen:output_path}/extracted_debians.json
+
+[unpack_debs]
+
+output_path = ${dataset_gen:output_path}/deb_metadata.json
+
+[binary_extractor]
+
+md5_buffer_size = 65536
+output_path = ${dataset_gen:output_path}/binaries

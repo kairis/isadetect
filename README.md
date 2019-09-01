@@ -36,7 +36,15 @@ ml: Machine Learning related scripts: training, generating ML model.
 
 api: Exposing the ML classification as RESTful API via Swagger/OpenAPI.
 
+dataset_gen: Set of tools and scripts to gather and compile the datasets.
+
 plugins: Plugins that call the RESTful API from SotA tools such as radare2 and IDAPro.
+
+## Requirements
+
+- Linux-based system, tested to work on Ubuntu 16.04 and Debian 9.9
+
+- Python 3
 
 ## Questions and comments
 
