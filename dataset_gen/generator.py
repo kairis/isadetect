@@ -10,6 +10,7 @@ from tools.mount_and_extract_deb import MountAndExtractDebs
 from tools.deb_unpacker import UnpackDebianFiles
 from tools.extract_binaries import BinaryExtractor
 from tools.debian_port_converter import DebianPortConverter
+from tools.calculate_features import FeatureCalculator
 from scraper.firmware.spiders.debian_ports_ftp import DebianPortSpider
 from scraper.firmware.spiders.debian import DebianSpider
 from scraper.firmware.spiders.debian_package_list import DebianPackageListSpider
@@ -98,7 +99,7 @@ def parse_config_file():
 # Download ISO files using jigdo files
 
 
-def download_iso_files(verbose=False):
+def download_iso_files(verbose, iso_ignore_list, downloaded_architectures):
     print("-----------------------")
     print("Starting to download ISO files from jigdos")
     jigdoDownloader = JigdoDownloader()
@@ -212,6 +213,23 @@ def crawl_debian_ports(verbose=False):
     print("Crawling for debian ports done")
 
 
+def calculate_features(verbose, downloaded_architectures, args):
+    print("-----------------------")
+    print("Starting to calculate features")
+    featureCalculator = FeatureCalculator()
+    featureCalculator.init(thread_count=config["dataset_gen"]["thread_count"],
+             code_section_minimum_size=config["feature_calculator"]["code_section_minimum_size"],
+             limit_number_of_binaries=config["feature_calculator"]["limit_number_of_binaries"],
+             downloaded_architectures=downloaded_architectures,
+             full_binaries=args.full_binaries,
+             random_sampling=args.random_sampling,
+             sample_size=config["feature_calculator"]["sample_size"],
+             input_path=config["binary_extractor"]["output_path"],
+             output_path=config["feature_calculator"]["output_path"])
+    featureCalculator.run()
+    print("Calculating features done")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process debian files. If you want to download one of the officially \
                                      supported architectures, add the architecture to 'architectures' in config.ini and run --all_deb. \
@@ -229,6 +247,12 @@ if __name__ == "__main__":
                         help="Unpack debian files")
     parser.add_argument("--extract_binaries", action="store_true",
                         help="Extract binaries from the debian packages")
+    parser.add_argument("--calc_features", action="store_true",
+                        help="Calculate features to be used for training the ML model")
+    parser.add_argument("--full_binaries", action="store_true",
+                        help="Whether to use full binaries when calculating the features. Without this, only code sections are used.")
+    parser.add_argument("--random_sampling", action="store_true",
+                        help="Whether to use random sampling when calculating the features. Helpful when using small values for code section minimum size.")
     parser.add_argument("--accept", "-a", action="store_true",
                         help="Accept warning about download size")
     parser.add_argument("--verbose", "-v", action="store_true",
@@ -243,26 +267,32 @@ if __name__ == "__main__":
 
     if args.isos:
         print_prompt(args)
-        download_iso_files(verbose=args.verbose)
+        download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
+                           downloaded_architectures=downloaded_architectures)
     elif args.extract_debians:
         extract_debians(verbose=args.verbose)
     elif args.unpack:
         unpack_debians(verbose=args.verbose)
     elif args.extract_binaries:
         extract_binaries(verbose=args.verbose)
+    elif args.calc_features:
+        calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
     elif args.all_deb:
         check_requirements()
         print_prompt(args)
         crawl_debian_jigdos(verbose=args.verbose)
-        download_iso_files(verbose=args.verbose)
+        download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
+                           downloaded_architectures=downloaded_architectures)
         extract_debians(verbose=args.verbose)
         unpack_debians(verbose=args.verbose)
         extract_binaries(verbose=args.verbose)
+        calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
     elif args.all_ports:
         check_requirements()
         crawl_debian_ports(verbose=args.verbose)
         convert_debian_ports()
         unpack_debians(verbose=args.verbose)
         extract_binaries(verbose=args.verbose)
+        calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
     else:
         parser.print_help()

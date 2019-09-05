@@ -49,3 +49,13 @@ output_path = ${dataset_gen:output_path}/deb_metadata.json
 
 md5_buffer_size = 65536
 output_path = ${dataset_gen:output_path}/binaries
+
+[feature_calculator]
+
+code_section_minimum_size = 4096
+limit_number_of_binaries = 1000
+
+# Used only if "--random_sampling" is used
+sample_size = 4096
+
+output_path = ${dataset_gen:output_path}/features.csv

@@ -23,7 +23,6 @@ class MetaData():
         self.filesize = -1
         self.wordsize = -1
         self.deb_package = "unknown"
-        # only_code to know if extracting code section was successful or not
         self.only_code = "unknown"
         self.only_code_size = -1
 
