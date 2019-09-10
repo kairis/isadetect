@@ -247,7 +247,7 @@ if __name__ == "__main__":
                         help="Unpack debian files")
     parser.add_argument("--extract_binaries", action="store_true",
                         help="Extract binaries from the debian packages")
-    parser.add_argument("--calc_features", action="store_true",
+    parser.add_argument("--calculate_features", action="store_true",
                         help="Calculate features to be used for training the ML model")
     parser.add_argument("--full_binaries", action="store_true",
                         help="Whether to use full binaries when calculating the features. Without this, only code sections are used.")
@@ -275,7 +275,7 @@ if __name__ == "__main__":
         unpack_debians(verbose=args.verbose)
     elif args.extract_binaries:
         extract_binaries(verbose=args.verbose)
-    elif args.calc_features:
+    elif args.calculate_features:
         calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
     elif args.all_deb:
         check_requirements()

@@ -24,13 +24,7 @@ class FileException(Exception):
 
 class FirmwarePipeline(FilesPipeline):
     def __init__(self, store_uri, download_func=None, settings=None):
-        if settings and "SQL_SERVER" in settings:
-            import psycopg2
-            self.database = psycopg2.connect(database="firmware", user="firmadyne",
-                                             password="firmadyne", host=settings["SQL_SERVER"],
-                                             port=5432)
-        else:
-            self.database = None
+        self.database = None
         self.filename = ''
         super(FirmwarePipeline, self).__init__(
             store_uri, download_func, settings)
