@@ -14,22 +14,13 @@ import numpy
 from flask import request
 from flask_restplus import Resource
 from app.helpers.calculate_features import UNKNOWN_ARCHITECTURE, get_architecture, calculate_features
-from sklearn.externals import joblib
 import os
 import sys
+from flask import current_app as app
 
 api = BinaryDTO.api
 parser = BinaryDTO.parser
 binary_output = BinaryDTO.binary_output
-
-if "ISADETECT_MODEL_FILE" not in os.environ:
-    sys.exit("Missing environment value ISADETECT_MODEL_FILE")
-else:
-    try:
-        model = joblib.load(os.environ["ISADETECT_MODEL_FILE"])
-    except:
-        sys.exit("Failed to load model: " + os.environ["ISADETECT_MODEL_FILE"])
-
 
 @api.route('/')
 class BinaryUpload(Resource):
@@ -39,7 +30,6 @@ class BinaryUpload(Resource):
         # Read uploaded file into memory
         binary = request.files["binary"].read()
         form = request.form
-        print("API key is", form["api_key"])
 
         # Calculate features out of the binary
         features = calculate_features(binary)
@@ -49,6 +39,7 @@ class BinaryUpload(Resource):
         query = pd.get_dummies(query_df)
 
         # Use trained model to predict the architecture
+        model = app.config["model"]
         prediction = model.predict(query).astype(numpy.int64)
         prediction_int = prediction[0].item()
 

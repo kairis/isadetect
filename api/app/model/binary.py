@@ -14,7 +14,6 @@ class BinaryDTO:
 
     parser = api.parser()
     parser.add_argument('binary', type=FileStorage, location='files')
-    parser.add_argument('api_key', type=str, location='form')
 
     binary_output = api.model('Binary output', {
         'prediction': fields.String(),
