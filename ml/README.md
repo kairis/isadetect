@@ -1,27 +1,13 @@
-Currently holds only an example model of a trained Random Forest classifier,
-that can be used to test the API.
+# Requirements
 
-Currently supported architectures:
+From pip:
+- pandas
+- scikit-learn
 
-alpha,
-amd64,
-arm64,
-armel,
-armhf,
-hppa,
-i386,
-ia64,
-m68k,
-mips,
-mips64el,
-mipsel,
-powerpc,
-powerpcspe,
-powerpc64,
-powerpc64el,
-riscv,
-s390,
-s390x,
-sh4,
-sparc,
-x32
+# How to run
+
+1. ```python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt```
+2. Run train.py by giving path to the CSV file containing the extracted features of binaries (input) and path to the output file, which will contain the trained random forest classifier, for example:
+```python3 train.py --input ../dataset_gen/output/features.csv --output trained_model.ml```
+
+The examples folder includes a sample that is a trained model for all the 23 architectures supported by this toolset.
