@@ -109,7 +109,7 @@ def download_iso_files(verbose, iso_ignore_list, downloaded_architectures):
                          iso_ignore_list=iso_ignore_list,
                          downloaded_architectures=downloaded_architectures,
                          verbose=verbose,
-                         input_json=config["crawler"]["iso_metadata"],
+                         input_json=config["crawler"]["output_path"],
                          output_path=config["jigdo_downloader"]["output_path"])
 
     jigdoDownloader.download_jigdos()

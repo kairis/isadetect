@@ -25,7 +25,7 @@ debian_versions = 9.0.0
 package_list = Web Servers,Shells,Utilities,Embedded software,Kernels,Libraries,Administration Utilities
 
 iot_packages_location = ${dataset_gen:output_path}/iot_packages.json
-iso_metadata = ${dataset_gen:output_path}/iso_metadata.json
+output_path = ${dataset_gen:output_path}/debian_jigdos.json
 
 [debian_port_downloader]
 

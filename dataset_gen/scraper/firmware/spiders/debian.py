@@ -17,7 +17,7 @@ class DebianSpider(Spider):
     allowed_domains = ["debian.org"]
     start_urls = ["http://cdimage.debian.org/mirror/cdimage/archive/"]
     custom_settings = {
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["crawler"]["iso_metadata"]}
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["crawler"]["output_path"]}
 
     def parse(self, response):
         self.architectures = config["crawler"]["architectures"].split(",")
@@ -25,8 +25,8 @@ class DebianSpider(Spider):
 
         # Delete old content of the output file, otherwise scrapy
         # just appends data to it
-        if (os.path.exists(config["crawler"]["iso_metadata"])):
-            with open(config["crawler"]["iso_metadata"], "w") as json_file:
+        if (os.path.exists(config["crawler"]["output_path"])):
+            with open(config["crawler"]["output_path"], "w") as json_file:
                 json_file.write("")
 
         self.download_urls = []
