@@ -15,7 +15,14 @@ class BinaryDTO:
     parser = api.parser()
     parser.add_argument('binary', type=FileStorage, location='files')
 
+    prediction_output = api.model('Prediction output', {
+        "architecture": fields.String(),
+        "wordsize": fields.Integer(),
+        "endianness": fields.String()
+    })
+
     binary_output = api.model('Binary output', {
-        'prediction': fields.String(),
+        'prediction': fields.Nested(prediction_output),
         'prediction_probability': fields.Integer()
     })
+
