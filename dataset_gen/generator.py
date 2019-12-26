@@ -225,7 +225,8 @@ def calculate_features(verbose, downloaded_architectures, args):
              random_sampling=args.random_sampling,
              sample_size=config["feature_calculator"]["sample_size"],
              input_path=config["binary_extractor"]["output_path"],
-             output_path=config["feature_calculator"]["output_path"])
+             output_path=config["feature_calculator"]["output_path"],
+             create_testset=args.use_dataset)
     featureCalculator.run()
     print("Calculating features done")
 
@@ -255,6 +256,8 @@ if __name__ == "__main__":
                         help="Whether to use random sampling when calculating the features. Helpful when using small values for code section minimum size.")
     parser.add_argument("--accept", "-a", action="store_true",
                         help="Accept warning about download size")
+    parser.add_argument("--use_dataset", action="store_true",
+                        help="If an own dataset is used, and no JSON metafile exists, use this switch")
     parser.add_argument("--verbose", "-v", action="store_true",
                         help="Produce more verbose output")
     args = parser.parse_args()
