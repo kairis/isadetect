@@ -1,8 +1,6 @@
 # Project
 
-isadetect - "ML-based ISA detection (architecture and endianness of binary code/sequences)"
-
-tl;dr: Input: binary file. Output: prediction for architecture and endianness.
+ISAdetect - "ML-based ISA detection (architecture and endianness of binary code/sequences)"
 
 ## Referencing
 
@@ -40,11 +38,9 @@ dataset_gen: Set of tools and scripts to gather and compile the datasets.
 
 plugins: Plugins that call the RESTful API from SotA tools such as radare2 and IDAPro.
 
-## Requirements
+## Dataset
 
-- Linux-based system, tested to work on Ubuntu 16.04 and Debian 9.9
-
-- Python 3
+Dataset related to this project can be found at https://etsin.fairdata.fi/dataset/6ac31f30-b12e-4c7d-a736-4b98bcffacd8 (http://urn.fi/urn:nbn:fi:att:4840d323-9537-432d-af0a-ce2c6914ab82)
 
 ## Questions and comments
 
