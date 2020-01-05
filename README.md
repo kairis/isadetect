@@ -40,7 +40,7 @@ plugins: Plugins that call the RESTful API from SotA tools such as radare2 and I
 
 ## Dataset
 
-Dataset related to this project can be found at https://etsin.fairdata.fi/dataset/03fe55df-a1bb-4d24-8c8b-eb12eb3b74f1 (http://urn.fi/urn:nbn:fi:att:fef41a31-0b7f-4903-8df7-38c65c2455cf)
+Dataset related to this project can be found at https://etsin.fairdata.fi/dataset/03fe55df-a1bb-4d24-8c8b-eb12eb3b74f1 (http://urn.fi/urn:nbn:fi:att:4dbe7751-bab9-47be-85d1-bf535a23b59a)
 
 ## Questions and comments
 
