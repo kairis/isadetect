@@ -63,7 +63,7 @@ class BinaryExtractor():
                 md5.update(data)
         metadata.filehash = md5.hexdigest()
 
-        cmd = ["file", binary]
+        cmd = ["file", "-b", binary]
         ret = call_cmd(cmd=cmd, shell=False, verbose=self.verbose)
         metadata.fileinfo = ret.decode("utf-8").split("\n")[0]
         if "LSB" in metadata.fileinfo:
