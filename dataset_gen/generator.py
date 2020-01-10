@@ -123,7 +123,7 @@ def extract_debians(verbose=False):
     print("-----------------------")
     print("Starting to mount ISO files")
     isoExtractor = MountAndExtractDebs()
-    isoExtractor.init(thread_count=config["deb_extractor"]["thread_count"],
+    isoExtractor.init(thread_count=config["dataset_gen"]["thread_count"],
                       iot_packages_location=config["crawler"]["iot_packages_location"],
                       verbose=verbose,
                       input_json=config["jigdo_downloader"]["output_path"],
@@ -140,7 +140,7 @@ def unpack_debians(verbose=False):
     print("-----------------------")
     print("Starting to unpack debian packages")
     debExtractor = UnpackDebianFiles()
-    debExtractor.init(thread_count=config["deb_extractor"]["thread_count"],
+    debExtractor.init(thread_count=config["dataset_gen"]["thread_count"],
                       verbose=verbose,
                       input_json=config["deb_extractor"]["output_path"],
                       output_path=config["unpack_debs"]["output_path"])
