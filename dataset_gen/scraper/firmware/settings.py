@@ -20,13 +20,13 @@ ITEM_PIPELINES = {
 
 import os
 import sys
-from configparser import ConfigParser, ExtendedInterpolation, SafeConfigParser
+from configparser import ConfigParser, ExtendedInterpolation
 
 root_dir = os.getenv("DATASET_GEN_ROOT_FOLDER")
 if root_dir is None:
     os.environ.setdefault('DATASET_GEN_ROOT_FOLDER', os.getcwd())
 
-config = SafeConfigParser(os.environ, interpolation=ExtendedInterpolation())
+config = ConfigParser(os.environ, interpolation=ExtendedInterpolation())
 
 
 if config.sections() == []:

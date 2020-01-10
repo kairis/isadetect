@@ -4,7 +4,7 @@ import subprocess
 import logging
 import argparse
 
-from configparser import ConfigParser, ExtendedInterpolation, SafeConfigParser
+from configparser import ConfigParser, ExtendedInterpolation
 from tools.jigdo_to_iso import JigdoDownloader
 from tools.mount_and_extract_deb import MountAndExtractDebs
 from tools.deb_unpacker import UnpackDebianFiles
@@ -17,7 +17,7 @@ from scraper.firmware.spiders.debian_package_list import DebianPackageListSpider
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-config = SafeConfigParser(os.environ, interpolation=ExtendedInterpolation())
+config = ConfigParser(os.environ, interpolation=ExtendedInterpolation())
 os.environ.setdefault('SCRAPY_SETTINGS_MODULE', "scraper.firmware.settings")
 
 
