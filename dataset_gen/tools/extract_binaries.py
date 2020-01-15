@@ -26,6 +26,31 @@ class MetaData():
         self.only_code = "unknown"
         self.only_code_size = -1
 
+sanity_check = {
+    "alpha": {"endianness": "little", "wordsize": 64},
+    "amd64": {"endianness": "little", "wordsize": 64},
+    "arm64": {"endianness": "little", "wordsize": 64},
+    "armel": {"endianness": "little", "wordsize": 32},
+    "armhf": {"endianness": "little", "wordsize": 32},
+    "hppa": {"endianness": "big", "wordsize": 32},
+    "i386": {"endianness": "little", "wordsize": 32},
+    "ia64": {"endianness": "little", "wordsize": 64},
+    "m68k": {"endianness": "big", "wordsize": 32},
+    "mips": {"endianness": "big", "wordsize": 32},
+    "mips64el": {"endianness": "little", "wordsize": 64},
+    "mipsel": {"endianness": "little", "wordsize": 32},
+    "powerpc": {"endianness": "big", "wordsize": 32},
+    "powerpcspe": {"endianness": "big", "wordsize": 32},
+    "ppc64": {"endianness": "big", "wordsize": 64},
+    "ppc64el": {"endianness": "little", "wordsize": 64},
+    "riscv64": {"endianness": "little", "wordsize": 64},
+    "s390": {"endianness": "big", "wordsize": 32},
+    "s390x": {"endianness": "big", "wordsize": 64},
+    "sh4": {"endianness": "little", "wordsize": 32},
+    "sparc": {"endianness": "big", "wordsize": 32},
+    "sparc64": {"endianness": "big", "wordsize": 64},
+    "x32": {"endianness": "little", "wordsize": 32}
+}
 
 class BinaryExtractor():
 
@@ -47,9 +72,9 @@ class BinaryExtractor():
     def extract_information(self, binary, output_path):
         metadata = MetaData()
 
-        metadata.filename = binary
-        metadata.deb_package = [f for f in binary.split(
-            "/") if "extraction" in f][0].split("_extraction")[0]
+        split = [f for f in binary.split("/") if "extraction" in f][0].split("_extraction")
+        metadata.deb_package = split[0]
+        metadata.filename = split[1]
 
         metadata.architecture = metadata.deb_package.split(
             ".")[-2].split("_")[-1]
@@ -71,10 +96,18 @@ class BinaryExtractor():
         else:
             metadata.endianness = "big"
 
+        # Sanity check
+        if metadata.endianness != sanity_check[metadata.architecture]["endianness"]:
+            return metadata
+
         if "32-bit" in metadata.fileinfo:
             metadata.wordsize = 32
         else:
             metadata.wordsize = 64
+
+        # Sanity check
+        if metadata.wordsize != sanity_check[metadata.architecture]["wordsize"]:
+            return metadata
 
         metadata.filesize = os.path.getsize(binary)
 
@@ -132,7 +165,7 @@ class BinaryExtractor():
     def run(self, filepath, output_directory, result):
         try:
             metadata = self.extract_information(filepath, output_directory)
-            if metadata.only_code_size != -1:
+            if metadata.only_code_size != -1 and metadata.only_code_size != 0:
                 result.append(metadata)
                 output_path = os.path.join(output_directory, metadata.filehash)
                 if not os.path.exists(output_path):
