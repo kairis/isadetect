@@ -1,8 +1,6 @@
 # Metadata and file extractor for DEB packages
 # Extracts files from a Debian package and saves metadata to JSON
 # meta data extracted includes: 1)software name, 2)version number, 3)architecture, 4)debian distribution, 5)pakage file structure, 6)md5 file hashes 7)control info
-# TODO: enable Debian distritbution metadata extraction
-# v0.12 - Rough proof of concept - limited testing
 
 import os
 import re
