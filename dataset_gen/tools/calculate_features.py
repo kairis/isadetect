@@ -149,7 +149,7 @@ class FeatureCalculator():
         self.fps["powerpcspe_spe_instruction_evl"] = br"(\x10|\x11|\x12|\x13)[\x00-\xff]{2}(\x01|\xc1|\xc8|\xc9|\xc0|\xd0|\xd1|\xda)"
 
 
-    def init(self, thread_count, code_section_minimum_size, limit_number_of_binaries, downloaded_architectures, full_binaries, random_sampling, sample_size, input_path, output_path, create_testset):
+    def init(self, thread_count, code_section_minimum_size, limit_number_of_binaries, architectures, full_binaries, random_sampling, sample_size, input_path, output_path, create_testset):
         self.initialize_fingerprints()
         for key, value in self.fps.items():
             regex = re.compile(value)
@@ -157,11 +157,11 @@ class FeatureCalculator():
         self.threadLimiter = threading.BoundedSemaphore(int(thread_count))
         self.byte_frequencies = []
         self.fingerprints = []
-        self.architectures = []
+        self.processed_architectures = []
         self.headers_written = False
         self.code_section_minimum_size = int(code_section_minimum_size)
         self.limit_number_of_binaries = int(limit_number_of_binaries)
-        self.downloaded_architectures = downloaded_architectures
+        self.architectures = architectures
         self.full_binaries = full_binaries
         self.random_sampling = random_sampling
         self.sample_size = int(sample_size)
@@ -170,8 +170,11 @@ class FeatureCalculator():
         self.create_testset = create_testset
         self.last_arch = 1
 
+        if os.path.exists(self.output_path):
+            os.remove(self.output_path)
 
-    def calculate_bfd(self, analyze_this, architecture, count):
+
+    def run(self, analyze_this, architecture, count):
         try:
             byte_count = 0
 
@@ -207,7 +210,7 @@ class FeatureCalculator():
                 for match in value.finditer(data):
                     i += 1
                 fingerprints[key] = i / byte_count
-            self.architectures.append(architecture)
+            self.processed_architectures.append(architecture)
             self.byte_frequencies.append(byte_frequency_counter)
             self.fingerprints.append(fingerprints)
             count.increment()
@@ -219,50 +222,33 @@ class FeatureCalculator():
             with open(self.output_path, 'w') as f:
                 filehandle = csv.writer(f)
                 self.print_headers(filehandle)
-                # if len(self.architectures) > 0 and self.architectures[0] != 99:
-                #     for i in range(1, self.architectures[0]):
-                #         data = []
-                #         for j in range(1,293):
-                #             data.append("?")
-                #         data.append(i)
-                #         filehandle.writerow(data)
-
-
-                for i in range(0, len(self.architectures)):
+                for i in range(0, len(self.processed_architectures)):
                     data = []
                     try:
                         self.byte_frequencies[i]
                     except IndexError:
-                        print("error " + str(self.architectures[i]))
+                        print("error " + str(self.processed_architectures[i]))
                         continue
                     data = data + self.byte_frequencies[i]
                     for key in sorted(self.fingerprints[i]):
                         data.append(self.fingerprints[i][key])
-                    data.append(self.architectures[i])
+                    data.append(self.processed_architectures[i])
 
                     filehandle.writerow(data)
         else:
             with open(self.output_path, 'a') as f:
                 filehandle = csv.writer(f)
-                # if len(self.architectures) > 0 and self.architectures[0] != 99:
-                #     for i in range(self.last_arch + 1, self.architectures[0]):
-                #         data = []
-                #         for j in range(1,293):
-                #             data.append("?")
-                #         data.append(i)
-                #         filehandle.writerow(data)
-
-                for i in range(0, len(self.architectures)):
+                for i in range(0, len(self.processed_architectures)):
                     data = []
                     try:
                         self.byte_frequencies[i]
                     except IndexError:
-                        print("error " + str(self.architectures[i]))
+                        print("error " + str(self.processed_architectures[i]))
                         continue
                     data = data + self.byte_frequencies[i]
                     for key in sorted(self.fingerprints[i]):
                         data.append(self.fingerprints[i][key])
-                    data.append(self.architectures[i])
+                    data.append(self.processed_architectures[i])
 
                     filehandle.writerow(data)
 
@@ -292,11 +278,11 @@ class FeatureCalculator():
 
         return output
 
-    def run(self):
+    def calculate_bfd(self):
         if self.create_testset:
-            for arch in self.downloaded_architectures:
+            for arch in self.architectures:
                 threads = []
-                self.architectures = []
+                self.processed_architectures = []
                 self.byte_frequencies = []
                 self.fingerprints = []
                 count = Counter()
@@ -304,6 +290,7 @@ class FeatureCalculator():
                 if not os.path.isdir(path):
                     logging.error("Directory for architecture " + arch + " not found")
                     sys.exit(1)
+                logging.debug("Processing " + arch)
                 binaries = self.find_binaries(path).decode("utf-8").split("\n")
                 for binary in binaries:
                     if binary == "":
@@ -313,35 +300,32 @@ class FeatureCalculator():
                     if self.full_binaries:
                         if ".code" in binary:
                             continue
-                    logging.debug("Count " + str(count.value))
                     if count.value > self.limit_number_of_binaries:
                         break
                     self.threadLimiter.acquire()
-                    t = threading.Thread(target=self.calculate_bfd, args=(binary, arch, count))
+                    t = threading.Thread(target=self.run, args=(binary, arch, count))
                     t.start()
                     threads.append(t)
                 for t in threads:
                     t.join()
+                logging.debug("Processed " + str(count.value) + " binaries")
                 self.print_data()
                 self.last_arch = self.switch_case(arch)
             return
 
-        if self.full_binaries:
-            data = "filename"
-        else:
-            data = "only_code"
-
-        if os.path.exists(self.output_path):
-            os.remove(self.output_path)
-
-        for arch in self.downloaded_architectures:
+        for arch in self.architectures:
             threads = []
             binary_path = os.path.join(self.input_path, "{}/{}.json")
             path = binary_path.format(arch, arch)
             if os.path.exists(path):
+                logging.debug("Processing " + arch)
                 with open(path) as f:
                     binaries_json = json.load(f)
                 count = Counter()
+                if self.full_binaries:
+                    data = os.path.join(self.input_path, arch, binaries_json[0]["filehash"])
+                else:
+                    data = binaries_json[0]["only_code"]
 
                 # If using random sampling and sample size is greated than minimum code section size,
                 # take minimum of the size of the wanted sample sized binaries
@@ -354,15 +338,16 @@ class FeatureCalculator():
                     min_binary_size = self.code_section_minimum_size
 
                 for binary in [f for f in binaries_json if f["only_code_size"] > min_binary_size]:
-                    logging.debug("Count " + str(count.value))
                     if count.value > self.limit_number_of_binaries:
                         break
                     self.threadLimiter.acquire()
-                    t = threading.Thread(target=self.calculate_bfd, args=(binary[data], binary["architecture"], count))
+                    t = threading.Thread(target=self.run, args=(data, binary["architecture"], count))
                     t.start()
                     threads.append(t)
                 for t in threads:
                     t.join()
+
+                logging.debug("Processed " + str(count.value) + " binaries")
 
                 self.print_data()
             else:

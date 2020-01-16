@@ -1,6 +1,6 @@
 # Metadata and file extractor for DEB packages
 # Extracts files from a Debian package and saves metadata to JSON
-# meta data extracted includes: 1)software name, 2)version number, 3)architecture, 4)debian distribution, 5)pakage file structure, 6)md5 file hashes 7)control info
+# meta data extracted includes: 1)software name, 2)version number, 3)architecture, 4)package file structure, 5)md5 file hashes 6)control info
 
 import os
 import re
@@ -19,7 +19,6 @@ class Data():
     def __init__(self):
         self.software = "unknown"
         self.version = "unknown"
-        self.debiandistro = "unknown"
         self.filestructure = "unknown"
         self.controlinfo = "unknown"
         self.package = "unknown"
@@ -69,7 +68,7 @@ class UnpackDebianFiles():
             name_no_ext = rpart[0]
 
         candidates = []
-        candidates = candidates + name_no_ext.split('_')
+        candidates = candidates + name_no_ext.rsplit('_', 1)
         return candidates
 
     def extract_hash(self, fstruct, hashlist):

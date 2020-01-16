@@ -69,15 +69,19 @@ class BinaryExtractor():
 
         return output
 
-    def extract_information(self, binary, output_path):
+    def extract_information(self, binary, arch, output_path):
         metadata = MetaData()
+        if "extraction" not in binary:
+            return metadata
 
-        split = [f for f in binary.split("/") if "extraction" in f][0].split("_extraction")
-        metadata.deb_package = split[0]
-        metadata.filename = split[1]
+        metadata.deb_package = binary.split("_extraction")[0].split("/")[-1]
+        metadata.filename = binary.split("_extraction")[1]
 
-        metadata.architecture = metadata.deb_package.split(
-            ".")[-2].split("_")[-1]
+        metadata.architecture = metadata.deb_package.split(".")[-2].split("_")[-1]
+
+        # Sanity check for architecture
+        if metadata.architecture != arch:
+            return metadata
 
         md5 = hashlib.md5()
         with open(binary, 'rb') as f:
@@ -96,7 +100,7 @@ class BinaryExtractor():
         else:
             metadata.endianness = "big"
 
-        # Sanity check
+        # Sanity check for endianness
         if metadata.endianness != sanity_check[metadata.architecture]["endianness"]:
             return metadata
 
@@ -105,7 +109,7 @@ class BinaryExtractor():
         else:
             metadata.wordsize = 64
 
-        # Sanity check
+        # Sanity check for word size
         if metadata.wordsize != sanity_check[metadata.architecture]["wordsize"]:
             return metadata
 
@@ -162,9 +166,9 @@ class BinaryExtractor():
 
         return metadata
 
-    def run(self, filepath, output_directory, result):
+    def run(self, filepath, output_directory, arch, result):
         try:
-            metadata = self.extract_information(filepath, output_directory)
+            metadata = self.extract_information(filepath, arch, output_directory)
             if metadata.only_code_size != -1 and metadata.only_code_size != 0:
                 result.append(metadata)
                 output_path = os.path.join(output_directory, metadata.filehash)
@@ -214,12 +218,11 @@ class BinaryExtractor():
                     binaries = self.find_binaries(
                         deb["package"] + "_extraction").decode("utf-8").split("\n")
                     for binary in [x for x in binaries if x != "" and ".code" not in x]:
-                        # This was done because of a DEB package containing a colon
-                        # in the path
                         self.threadLimiter.acquire()
+                        # This was done because of a DEB package containing a colon in the path
                         filepath = ":".join(binary.split(":")[:-1])
                         t = threading.Thread(target=self.run, args=(
-                            filepath, output_directory, result))
+                            filepath, output_directory, arch, result))
                         t.start()
                         threads.append(t)
 

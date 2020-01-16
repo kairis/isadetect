@@ -21,7 +21,7 @@ class DebianPortSpider(Spider):
         "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["debian_port_downloader"]["output_path"]}
 
     def parse(self, response):
-        architectures = config["crawler"]["port_architectures"].split(",")
+        architectures = config["crawler"]["architectures"].split(",")
 
         # Delete old content of the output file, otherwise scrapy
         # just appends data to it

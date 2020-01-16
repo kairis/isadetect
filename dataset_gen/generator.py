@@ -86,20 +86,20 @@ def parse_config_file():
         sys.exit(1)
 
     try:
-        downloaded_architectures = config["jigdo_downloader"]["downloaded_architectures"].split(
+        architectures = config["crawler"]["architectures"].split(
             ",")
     except:
         logging.error(
-            "Failed to parse jigdo_downloader.downloaded_architectures")
+            "Failed to parse crawler.architecture")
         sys.exit(1)
 
-    return iso_ignore_list, downloaded_architectures
+    return iso_ignore_list, architectures
 
 # -----------------------
 # Download ISO files using jigdo files
 
 
-def download_iso_files(verbose, iso_ignore_list, downloaded_architectures):
+def download_iso_files(verbose, iso_ignore_list, architectures):
     print("-----------------------")
     print("Starting to download ISO files from jigdos")
     jigdoDownloader = JigdoDownloader()
@@ -107,7 +107,7 @@ def download_iso_files(verbose, iso_ignore_list, downloaded_architectures):
     jigdoDownloader.init(thread_count=config["dataset_gen"]["thread_count"],
                          crawler_output_path=config["dataset_gen"]["output_path"],
                          iso_ignore_list=iso_ignore_list,
-                         downloaded_architectures=downloaded_architectures,
+                         architectures=architectures,
                          verbose=verbose,
                          input_json=config["crawler"]["output_path"],
                          output_path=config["jigdo_downloader"]["output_path"])
@@ -213,21 +213,21 @@ def crawl_debian_ports(verbose=False):
     print("Crawling for debian ports done")
 
 
-def calculate_features(verbose, downloaded_architectures, args):
+def calculate_features(verbose, architectures, args):
     print("-----------------------")
     print("Starting to calculate features")
     featureCalculator = FeatureCalculator()
     featureCalculator.init(thread_count=config["dataset_gen"]["thread_count"],
              code_section_minimum_size=config["feature_calculator"]["code_section_minimum_size"],
              limit_number_of_binaries=config["feature_calculator"]["limit_number_of_binaries"],
-             downloaded_architectures=downloaded_architectures,
+             architectures=architectures,
              full_binaries=args.full_binaries,
              random_sampling=args.random_sampling,
              sample_size=config["feature_calculator"]["sample_size"],
              input_path=config["binary_extractor"]["output_path"],
              output_path=config["feature_calculator"]["output_path"],
              create_testset=args.use_dataset)
-    featureCalculator.run()
+    featureCalculator.calculate_bfd()
     print("Calculating features done")
 
 
@@ -263,7 +263,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Check that environment is configured properly
-    iso_ignore_list, downloaded_architectures = parse_config_file()
+    iso_ignore_list, architectures = parse_config_file()
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -271,7 +271,7 @@ if __name__ == "__main__":
     if args.isos:
         print_prompt(args)
         download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
-                           downloaded_architectures=downloaded_architectures)
+                           architectures=architectures)
     elif args.extract_debians:
         extract_debians(verbose=args.verbose)
     elif args.unpack:
@@ -279,23 +279,23 @@ if __name__ == "__main__":
     elif args.extract_binaries:
         extract_binaries(verbose=args.verbose)
     elif args.calculate_features:
-        calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
+        calculate_features(verbose=args.verbose, architectures=architectures, args=args)
     elif args.all_deb:
         check_requirements()
         print_prompt(args)
         crawl_debian_jigdos(verbose=args.verbose)
         download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
-                           downloaded_architectures=downloaded_architectures)
+                           architectures=architectures)
         extract_debians(verbose=args.verbose)
         unpack_debians(verbose=args.verbose)
         extract_binaries(verbose=args.verbose)
-        calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
+        calculate_features(verbose=args.verbose, architectures=architectures, args=args)
     elif args.all_ports:
         check_requirements()
         crawl_debian_ports(verbose=args.verbose)
         convert_debian_ports()
         unpack_debians(verbose=args.verbose)
         extract_binaries(verbose=args.verbose)
-        calculate_features(verbose=args.verbose, downloaded_architectures=downloaded_architectures, args=args)
+        calculate_features(verbose=args.verbose, architectures=architectures, args=args)
     else:
         parser.print_help()

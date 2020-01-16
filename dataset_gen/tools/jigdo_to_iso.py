@@ -23,12 +23,12 @@ DEFAULT_THREAD_COUNT = 4
 
 class JigdoDownloader():
     def init(self, thread_count, crawler_output_path,
-             iso_ignore_list, downloaded_architectures,
+             iso_ignore_list, architectures,
              verbose, output_path, input_json):
         self.threadLimiter = threading.BoundedSemaphore(int(thread_count))
         self.crawler_output_path = crawler_output_path
         self.iso_ignore_list = iso_ignore_list
-        self.downloaded_architectures = downloaded_architectures
+        self.architectures = architectures
         self.verbose = verbose
         self.output_path = output_path
         self.input_json = input_json
@@ -64,10 +64,10 @@ class JigdoDownloader():
             # Check that only "full installations" are downloaded, ignore rest of the isos
             if (os.path.isfile(jigdo_path) and "jigdo" in filename and
                 not any(ignored in filename for ignored in self.iso_ignore_list) and
-                    any(archs in filename for archs in self.downloaded_architectures)):
+                    any(archs in filename for archs in self.architectures)):
                 arch = jigdo["architecture"]
                 version = jigdo["version"]
-                directory = os.path.join(self.crawler_output_path, "debian",
+                directory = os.path.join(self.crawler_output_path,
                                          "isos", arch, version)
                 if not os.path.exists(directory):
                     os.makedirs(directory)
@@ -92,7 +92,7 @@ class JigdoDownloader():
                     logging.error("Error while downloading " +
                                  jigdo_path + ": " + e)
             elif ("iso" in filename and not any(ignored in filename for ignored in self.iso_ignore_list)
-                    and any(archs in filename for archs in self.downloaded_architectures)):
+                    and any(archs in filename for archs in self.architectures)):
 
                 arch = jigdo["architecture"]
                 version = jigdo["version"]

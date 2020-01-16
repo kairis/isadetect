@@ -10,12 +10,13 @@ thread_count = 4
 # Possible architectures for >= 9.0.0: amd64, arm64, armel, armhf, i386, mips, mips64el, mipsel, ppc64el, s390x
 # ppc can be found from <= 8.0.0, s390, ia64 and sparc from <= 7.0.0, hppa in <= 5.0.0
 # One version of one architecture requires about 40 GB of free space
-architectures = mips64el
-
+#
 # Debian ports are found for the following architectures:
 # alpha, hppa, hurd-i386, ia64, m68k, ppc, ppc64, riscv64, sh4, sparc64 and x32
 # One architecture requires about 100 GB of free space
-port_architectures = alpha
+#
+# All architectures: alpha,amd64,arm64,armel,armhf,hppa,i386,ia64,m68k,mips,mips64el,mipsel,powerpc,powerpcspe,ppc64,ppc64el,riscv64,s390,s390x,sh4,sparc,sparc64,x32
+architectures = amd64
 
 debian_versions = 9.0.0
 
@@ -34,7 +35,6 @@ output_path = ${dataset_gen:output_path}/debian_ports.json
 [jigdo_downloader]
 
 iso_ignore_list = update,xfce,kde,lxde,businesscard
-downloaded_architectures = mips64el
 output_path = ${dataset_gen:output_path}/debian_isos.json
 
 [deb_extractor]
@@ -53,9 +53,9 @@ output_path = ${dataset_gen:output_path}/binaries
 [feature_calculator]
 
 code_section_minimum_size = 4096
-limit_number_of_binaries = 1000
+limit_number_of_binaries = 3000
 
 # Used only if "--random_sampling" is used
-sample_size = 4096
+sample_size = 16
 
 output_path = ${dataset_gen:output_path}/features.csv

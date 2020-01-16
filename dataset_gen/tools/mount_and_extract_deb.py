@@ -46,8 +46,7 @@ class MountAndExtractDebs():
         try:
             if not os.path.exists(mountDir):
                 os.makedirs(mountDir)
-            if not os.path.exists(debDir):
-                os.makedirs(debDir)
+
             try:
                 cmd = ["fuseiso", fileToMount, mountDir]
                 call_cmd(cmd=cmd, shell=False, verbose=self.verbose)
@@ -122,6 +121,12 @@ class MountAndExtractDebs():
                     iso_file = iso["iso_path"]
                     iso_folder = iso_file.split("/")[:-1]
                     iso_folder_join = '/'.join(map(str, iso_folder))
+
+                    # Create directory for debian files if it does not already exist
+                    debDir = os.path.join(iso_folder_join, "debs")
+                    if not os.path.exists(debDir):
+                        os.makedirs(debDir)
+
                     if os.path.isfile(iso_file) and iso_file.endswith("iso"):
                         try:
                             self.threadLimiter.acquire()
