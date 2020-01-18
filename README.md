@@ -17,29 +17,6 @@ url="https://doi.org/10.1145/3374664.3375742"
 }
 ```
 
-```
-@article{kairajarvi2019towards,
-	title={{Towards usable automated detection of CPU architecture and endianness for arbitrary binary files and object code sequences}},
-	author={Kairaj\"arvi, Sami and Costin, Andrei and H\"am\"al\"ainen, Timo},
-	journal={arXiv preprint arXiv:1908.05459},
-	year={2019},
-    howpublished =   "\url{http://arxiv.org/abs/1908.05459}",
-    url =   "http://arxiv.org/abs/1908.05459",
-}
-```
-```
-@MastersThesis{Kairajarvi:Thesis:2019,
-    author     =     {Kairaj\"arvi, Sami},
-    title     =     {{Automatic identification of architecture and endianness using binary file contents}},
-    school     =     {University of Jyv\"askyl\"a},
-    address     =     {Jyv\"askyl\"a, Finland},
-    year     =     {2019},
-    publisher   =   {JYX Digital Repository},
-    howpublished =   "\url{http://urn.fi/URN:NBN:fi:jyu-201904182217}",
-    url =   "http://urn.fi/URN:NBN:fi:jyu-201904182217",
-}
-```
-
 ## Directory structure
 
 ml: Machine Learning related scripts: training, generating ML model.
