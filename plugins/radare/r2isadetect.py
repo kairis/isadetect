@@ -13,7 +13,7 @@ import requests
 R2P = r2pipe.open()
 
 # CONF: Configure according to 'src/api/main.py'
-api_url = "http://localhost:5000/binary/"
+api_url = "https://isadetect.com/binary/"
 api_key = "testkey"
 
 
