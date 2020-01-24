@@ -300,9 +300,23 @@ class FeatureCalculator():
                     if self.full_binaries:
                         if ".code" in binary:
                             continue
+                    # If using random sampling and sample size is greated than minimum code section size,
+                    # take minimum of the size of the wanted sample sized binaries
+                    if self.random_sampling:
+                        if self.sample_size > self.code_section_minimum_size:
+                            min_binary_size = self.sample_size
+                        else:
+                            min_binary_size = self.code_section_minimum_size
+                    else:
+                        min_binary_size = self.code_section_minimum_size
+
+                    if os.path.getsize(binary) < min_binary_size:
+                        continue
+
                     if count.value > self.limit_number_of_binaries:
                         break
                     self.threadLimiter.acquire()
+
                     t = threading.Thread(target=self.run, args=(binary, arch, count))
                     t.start()
                     threads.append(t)
