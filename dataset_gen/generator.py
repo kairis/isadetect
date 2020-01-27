@@ -176,12 +176,15 @@ def print_prompt(args):
             sys.exit(0)
 
 
-def convert_debian_ports():
+def convert_debian_ports(append):
     print("-----------------------")
     print("Starting to convert list of debian ports")
     debianPortConverter = DebianPortConverter()
     debianPortConverter.init(input_json=config["debian_port_downloader"]["output_path"],
                              crawler_output_path=config["dataset_gen"]["output_path"],
+                             # If there are official debian versions already downloaded,
+                             # append to the JSON file instead of overwriting the data there
+                             append=append,
                              output_path=config["deb_extractor"]["output_path"])
     debianPortConverter.convert()
     print("Converting list of debian ports done")
@@ -236,10 +239,8 @@ if __name__ == "__main__":
                                      supported architectures, add the architecture to 'architectures' in config.ini and run --all_deb. \
                                      If you want to download debian files for one of the debian ports, add it to 'port_architectures' in config.ini \
                                      and run --all_ports. You can also run each module separately.")
-    parser.add_argument("--all_deb", action="store_true",
-                        help="Run all modules for official debian architectures")
-    parser.add_argument("--all_ports", action="store_true",
-                        help="Run all modules for ported debian architectures")
+    parser.add_argument("--all", action="store_true",
+                        help="Run all modules")
     parser.add_argument("--isos", action="store_true",
                         help="Download ISO files")
     parser.add_argument("--extract_debians",
@@ -267,6 +268,9 @@ if __name__ == "__main__":
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
+    # Check what kind of architectures "architectures" config value holds (official or ported)
+    archs = any(x in architectures for x in ["amd64", "arm64", "armel", "armhf", "i386", "mips", "mips64el", "mipsel", "ppc64el", "s390x"])
+    arch_ports = any(x in architectures for x in ["alpha", "hppa", "hurd-i386", "ia64", "m68k", "ppc", "ppc64", "riscv64", "sh4", "sparc64", "x32"])
 
     if args.isos:
         print_prompt(args)
@@ -280,13 +284,18 @@ if __name__ == "__main__":
         extract_binaries(verbose=args.verbose)
     elif args.calculate_features:
         calculate_features(verbose=args.verbose, architectures=architectures, args=args)
-    elif args.all_deb:
+    elif args.all:
         check_requirements()
         print_prompt(args)
-        crawl_debian_jigdos(verbose=args.verbose)
-        download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
+        if archs:
+            crawl_debian_jigdos(verbose=args.verbose)
+            download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
                            architectures=architectures)
-        extract_debians(verbose=args.verbose)
+            extract_debians(verbose=args.verbose)
+        if arch_ports:
+            crawl_debian_ports(verbose=args.verbose)
+            convert_debian_ports(append=archs)
+
         unpack_debians(verbose=args.verbose)
         extract_binaries(verbose=args.verbose)
         calculate_features(verbose=args.verbose, architectures=architectures, args=args)

@@ -6,7 +6,7 @@ import logging
 
 class DebianPortConverter():
 
-    def init(self, input_json, crawler_output_path, output_path):
+    def init(self, input_json, crawler_output_path, append, output_path):
         self.input_json = input_json
         self.crawler_output_path = crawler_output_path
         self.output_path = output_path
@@ -34,6 +34,9 @@ class DebianPortConverter():
             if arch not in results:
                 results[arch] = []
             results[arch].append(result)
-
-        with open(self.output_path, 'w', encoding="utf-8") as result_file:
-            result_file.write(json.dumps(results, default=lambda x: x.__dict__))
+        if self.append:
+            with open(self.output_path, 'a', encoding="utf-8") as result_file:
+                result_file.write(json.dumps(results, default=lambda x: x.__dict__))
+        else:
+            with open(self.output_path, 'w', encoding="utf-8") as result_file:
+                result_file.write(json.dumps(results, default=lambda x: x.__dict__))
