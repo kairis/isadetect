@@ -2,6 +2,8 @@
 
 ISAdetect - "ML-based ISA detection (architecture and endianness of binary code/sequences)"
 
+Live demo at https://isadetect.com/
+
 ## Referencing
 
 If/when using code and/or data from this project (direct, derivative works),
