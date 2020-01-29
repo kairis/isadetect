@@ -12,7 +12,7 @@ please don't forget to reference the following:
 ```
 @inproceedings{kairajarvi2020isadetect,
 author={Kairaj\"arvi, Sami and Costin, Andrei and H\"am\"al\"ainen, Timo},
-title={{ISAdetect: Usable automated detection of ISA (CPU architecture and endianness) for executable binary files and object code}},
+title={{ISAdetect: Usable Automated Detection of CPU Architecture and Endianness for Executable Binary Files and Object Code}},
 booktitle={Proceedings of the Tenth ACM Conference on Data and Application Security and Privacy},
 year={2020},
 url="https://doi.org/10.1145/3374664.3375742"
