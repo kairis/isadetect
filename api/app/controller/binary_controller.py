@@ -29,7 +29,6 @@ class BinaryUpload(Resource):
     def post(self):
         # Read uploaded file into memory
         binary = request.files["binary"].read()
-        form = request.form
 
         # Calculate features out of the binary
         features = calculate_features(binary)
@@ -39,7 +38,12 @@ class BinaryUpload(Resource):
         query = pd.get_dummies(query_df)
 
         # Use trained model to predict the architecture
-        model = app.config["model"]
+        model_type = request.args.get("type")
+        try:
+            model = app.config[model_type]
+        except KeyError:
+            return {"message": "Failed to find model to classify type: " + str(model_type)}
+
         prediction = model.predict(query).astype(numpy.int64)
         prediction_int = prediction[0].item()
 
