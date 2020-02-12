@@ -17,15 +17,33 @@ app.register_blueprint(bp)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run API that offers architecture detection endpoint for files")
-    parser.add_argument("--input", help="Path to the trained ML model", required=True)
+    parser.add_argument("--code_only_model", help="Path to the trained ML model with code only sections", required=True)
+    parser.add_argument("--full_binary_model", help="Path to the trained ML model with code only sections")
+    parser.add_argument("--fragment_model", help="Path to the trained ML model for code fragments")
+    parser.add_argument("--port", type=int, help="Port where the API is exposed to. Defaults to 5000", default=5000)
     args = parser.parse_args()
 
-    if args.input:
+    if args.code_only_model:
         try:
-            model = joblib.load(args.input)
-        except:
-            sys.exit("Failed to load model: " + args.input)
-        app.config["model"] = model
-        app.run(debug=True, host='0.0.0.0', port=5000)
+            code_only_model = joblib.load(args.code_only_model)
+        except Exception as e:
+            sys.exit("Failed to load model: " + args.code_only_model)
+        app.config["code"] = code_only_model
     else:
         parser.print_help()
+
+    if args.full_binary_model:
+        try:
+            full_binary_model = joblib.load(args.full_binary_model)
+        except:
+            sys.exit("Failed to load model: " + args.full_binary_model)
+        app.config["full"] = full_binary_model
+
+    if args.fragment_model:
+        try:
+            fragment_model = joblib.load(args.fragment_model)
+        except:
+            sys.exit("Failed to load model: " + args.fragment_model)
+        app.config["fragment"] = fragment_model
+
+    app.run(debug=True, host='0.0.0.0', port=args.port)
