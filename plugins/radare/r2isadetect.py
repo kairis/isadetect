@@ -14,7 +14,6 @@ R2P = r2pipe.open()
 
 # CONF: Configure according to 'src/api/main.py'
 api_url = "https://isadetect.com/binary/"
-api_key = "testkey"
 
 
 def r2isadetect(_):
@@ -24,6 +23,14 @@ def r2isadetect(_):
         # Run commands only when "isadetect" is called
         if not command.startswith("isadetect"):
             return 0
+        type_split = command.split(" ")
+        if len(type_split) > 1:
+            type = type_split[1]
+            if type not in ["full", "code", "fragment"]:
+                print("Invalid type value, allowed values are 'full', 'code' and 'fragment'")
+                return
+        else:
+            type = "code"
 
         # Get file size through radare command "iZ"
         file_size_cmd = "iZ"
@@ -35,7 +42,7 @@ def r2isadetect(_):
 
         # Send data to the API using multi-part form data
         data = {"binary": bytearray.fromhex(binary_in_hex.rstrip())}
-        form = {"api_key": api_key}
+        form = {"type": type}
         try:
             response = requests.request(
                 "POST", verify=False, url=api_url, files=data, data=form)
