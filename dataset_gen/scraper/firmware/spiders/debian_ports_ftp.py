@@ -18,7 +18,7 @@ class DebianPortSpider(Spider):
     allowed_domains = ["debian.org"]
     start_urls = ["http://ftp.ports.debian.org/debian-ports/"]
     custom_settings = {
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["debian_port_downloader"]["output_path"]}
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "CLOSESPIDER_ITEMCOUNT": 10, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["debian_port_downloader"]["output_path"]}
 
     def parse(self, response):
         architectures = config["crawler"]["architectures"].split(",")
