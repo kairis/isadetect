@@ -10,6 +10,7 @@ class DebianPortConverter():
         self.input_json = input_json
         self.crawler_output_path = crawler_output_path
         self.output_path = output_path
+        self.append = append
 
     def convert(self):
         try:
@@ -35,8 +36,13 @@ class DebianPortConverter():
                 results[arch] = []
             results[arch].append(result)
         if self.append:
-            with open(self.output_path, 'a', encoding="utf-8") as result_file:
-                result_file.write(json.dumps(results, default=lambda x: x.__dict__))
+            with open(self.output_path, 'r', encoding="utf-8") as result_file:
+                current_data = json.load(result_file)
+
+            current_data.update(results)
+
+            with open(self.output_path, 'w', encoding="utf-8") as result_file:
+                result_file.write(json.dumps(current_data, default=lambda x: x.__dict__))
         else:
             with open(self.output_path, 'w', encoding="utf-8") as result_file:
                 result_file.write(json.dumps(results, default=lambda x: x.__dict__))

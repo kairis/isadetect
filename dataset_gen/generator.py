@@ -190,7 +190,7 @@ def convert_debian_ports(append):
     print("Converting list of debian ports done")
 
 
-def crawl_debian_jigdos(verbose=False):
+def crawl_debians(archs, arch_ports, verbose=False):
     print("-----------------------")
     print("Starting to crawl jigdo files")
     if not verbose:
@@ -198,22 +198,12 @@ def crawl_debian_jigdos(verbose=False):
         configure_logging(install_root_handler=True)
         logging.disable(50)  # CRITICAL = 50
     c = CrawlerProcess(settings=get_project_settings())
-    c.crawl(DebianSpider)
+    if archs:
+        c.crawl(DebianSpider)
+    if arch_ports:
+        c.crawl(DebianPortSpider)
     c.start()
     print("Crawling for jigdo files done")
-
-
-def crawl_debian_ports(verbose=False):
-    print("-----------------------")
-    print("Starting to crawl debian ports")
-    if not verbose:
-        from scrapy.utils.log import configure_logging
-        configure_logging(install_root_handler=True)
-        logging.disable(50)  # CRITICAL = 50
-    c = CrawlerProcess(settings=get_project_settings())
-    c.crawl(DebianPortSpider)
-    c.start()
-    print("Crawling for debian ports done")
 
 
 def calculate_features(verbose, architectures, args):
@@ -236,9 +226,8 @@ def calculate_features(verbose, architectures, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process debian files. If you want to download one of the officially \
-                                     supported architectures, add the architecture to 'architectures' in config.ini and run --all_deb. \
-                                     If you want to download debian files for one of the debian ports, add it to 'port_architectures' in config.ini \
-                                     and run --all_ports. You can also run each module separately.")
+                                     supported architectures, add the architecture to 'architectures' in config.ini and run --all. \
+                                     You can also run each module separately.")
     parser.add_argument("--all", action="store_true",
                         help="Run all modules")
     parser.add_argument("--isos", action="store_true",
@@ -287,22 +276,14 @@ if __name__ == "__main__":
     elif args.all:
         check_requirements()
         print_prompt(args)
+        crawl_debians(archs=archs, arch_ports=arch_ports, verbose=args.verbose)
         if archs:
-            crawl_debian_jigdos(verbose=args.verbose)
             download_iso_files(verbose=args.verbose, iso_ignore_list=iso_ignore_list,
                            architectures=architectures)
             extract_debians(verbose=args.verbose)
         if arch_ports:
-            crawl_debian_ports(verbose=args.verbose)
             convert_debian_ports(append=archs)
 
-        unpack_debians(verbose=args.verbose)
-        extract_binaries(verbose=args.verbose)
-        calculate_features(verbose=args.verbose, architectures=architectures, args=args)
-    elif args.all_ports:
-        check_requirements()
-        crawl_debian_ports(verbose=args.verbose)
-        convert_debian_ports()
         unpack_debians(verbose=args.verbose)
         extract_binaries(verbose=args.verbose)
         calculate_features(verbose=args.verbose, architectures=architectures, args=args)

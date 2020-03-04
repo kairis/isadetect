@@ -17,7 +17,7 @@ class DebianSpider(Spider):
     allowed_domains = ["debian.org"]
     start_urls = ["http://cdimage.debian.org/mirror/cdimage/archive/"]
     custom_settings = {
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["crawler"]["output_path"]}
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 3, "CLOSESPIDER_ITEMCOUNT": 10, "DOWNLOAD_DELAY": 0.5, "FEED_FORMAT": "json", "FEED_URI": config["crawler"]["output_path"]}
 
     def parse(self, response):
         self.architectures = config["crawler"]["architectures"].split(",")
