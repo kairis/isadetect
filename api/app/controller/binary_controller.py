@@ -38,7 +38,7 @@ class BinaryUpload(Resource):
         query = pd.get_dummies(query_df)
 
         # Use trained model to predict the architecture
-        model_type = request.args.get("type")
+        model_type = request.form.get("type")
         try:
             model = app.config[model_type]
         except KeyError:
