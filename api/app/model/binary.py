@@ -14,7 +14,7 @@ class BinaryDTO:
 
     parser = api.parser()
     parser.add_argument("binary", type=FileStorage, location="files")
-    parser.add_argument("type", type=str, default="code", choices=("code", "full", "fragment"),
+    parser.add_argument("type", type=str, location="form", default="code", choices=("code", "full", "fragment"),
     help="Type of file to be analyzed.\n \
     Can be 'code' (only code sections), \
         'full' (full binary with code and data sections),\n or 'fragment' (small fragment to be analyzed, usually less than 2K bytes) ")
