@@ -37,7 +37,9 @@ instructions.
 ![Invalid instructions](https://i.imgur.com/udA1oYe.png)
 
 If you now exit the visual mode with "q", and type "isadetect", it will send the
-file to the API for identification, and print the results in the console. 
+file to the API for identification, and print the results in the console.
+You can also 'full', 'code' or 'fragment' after "isadetect" command to choose which type of file you are trying to identify,
+to possibly get better results.
 
 ![Run isadetect](https://i.imgur.com/7lPLqL8.png)
 
