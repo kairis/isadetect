@@ -2,4 +2,4 @@ Keras==2.3.1
 numpy==1.18.2
 scikit-learn==0.22.1
 tensorboard==2.0.1
-tensorflow==2.0.1
+tensorflow==2.5.0
