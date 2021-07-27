@@ -17,17 +17,20 @@ app.register_blueprint(bp)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run API that offers architecture detection endpoint for files")
-    parser.add_argument("--input", help="Path to the trained ML model with code only sections")
+    parser.add_argument("--input", help="Path to the trained ML model that will be used for all scenarios (code only, full and fragment)")
     parser.add_argument("--code_only_model", help="Path to the trained ML model with code only sections")
     parser.add_argument("--full_binary_model", help="Path to the trained ML model with code only sections")
     parser.add_argument("--fragment_model", help="Path to the trained ML model for code fragments")
     parser.add_argument("--port", type=int, help="Port where the API is exposed to. Defaults to 5000", default=5000)
+    parser.add_argument("--debug", action="store_true", help="Used for debug prints")
     args = parser.parse_args()
 
     if args.input:
         try:
             model = joblib.load(args.input)
         except Exception as e:
+            if args.debug:
+                print(e)
             sys.exit("Failed to load model: " + args.input)
         app.config["code"] = model
         app.config["full"] = model
@@ -36,6 +39,8 @@ if __name__ == '__main__':
         try:
             code_only_model = joblib.load(args.code_only_model)
         except Exception as e:
+            if args.debug:
+                print(e)
             sys.exit("Failed to load model: " + args.code_only_model)
         app.config["code"] = code_only_model
     else:
@@ -45,6 +50,8 @@ if __name__ == '__main__':
         try:
             full_binary_model = joblib.load(args.full_binary_model)
         except:
+            if args.debug:
+                print(e)
             sys.exit("Failed to load model: " + args.full_binary_model)
         app.config["full"] = full_binary_model
 
@@ -52,6 +59,8 @@ if __name__ == '__main__':
         try:
             fragment_model = joblib.load(args.fragment_model)
         except:
+            if args.debug:
+                print(e)
             sys.exit("Failed to load model: " + args.fragment_model)
         app.config["fragment"] = fragment_model
 
