@@ -17,13 +17,22 @@ app.register_blueprint(bp)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run API that offers architecture detection endpoint for files")
-    parser.add_argument("--code_only_model", help="Path to the trained ML model with code only sections", required=True)
+    parser.add_argument("--input", help="Path to the trained ML model with code only sections")
+    parser.add_argument("--code_only_model", help="Path to the trained ML model with code only sections")
     parser.add_argument("--full_binary_model", help="Path to the trained ML model with code only sections")
     parser.add_argument("--fragment_model", help="Path to the trained ML model for code fragments")
     parser.add_argument("--port", type=int, help="Port where the API is exposed to. Defaults to 5000", default=5000)
     args = parser.parse_args()
 
-    if args.code_only_model:
+    if args.input:
+        try:
+            model = joblib.load(args.input)
+        except Exception as e:
+            sys.exit("Failed to load model: " + args.input)
+        app.config["code"] = model
+        app.config["full"] = model
+        app.config["fragment"] = model
+    elif args.code_only_model:
         try:
             code_only_model = joblib.load(args.code_only_model)
         except Exception as e:
