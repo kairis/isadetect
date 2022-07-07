@@ -6,13 +6,13 @@ Copyright (C) Sami Kairajarvi <sami.kairajarvi@gmail.com>, 2019
 See COPYRIGHT, AUTHORS, LICENSE for more details.
 """
 
-from flask_restplus import Resource
+from flask_restx import Resource
 from app.model.binary import BinaryDTO
 import http
 import pandas as pd
 import numpy
 from flask import request
-from flask_restplus import Resource
+from flask_restx import Resource
 from app.helpers.calculate_features import UNKNOWN_ARCHITECTURE, get_architecture, calculate_features
 import os
 import sys

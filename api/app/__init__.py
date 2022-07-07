@@ -8,7 +8,7 @@ See COPYRIGHT, AUTHORS, LICENSE for more details.
 
 from .controller.binary_controller import api as binary
 from flask import Blueprint
-from flask_restplus import Api
+from flask_restx import Api
 
 bp = Blueprint('api', __name__)
 api = Api(
