@@ -6,7 +6,7 @@ Copyright (C) Sami Kairajarvi <sami.kairajarvi@gmail.com>, 2019
 See COPYRIGHT, AUTHORS, LICENSE for more details.
 """
 
-from flask_restplus import Namespace, fields
+from flask_restx import Namespace, fields
 from werkzeug.datastructures import FileStorage
 
 class BinaryDTO:
